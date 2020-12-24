@@ -1,4 +1,4 @@
-let adjCsv = 
+let adj_csv = 
 `from,to,friendship
 B,L0,yes
 B,L1a,no
