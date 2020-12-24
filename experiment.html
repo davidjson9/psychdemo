@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Research Study</title>
+
+    <!--
+        Written by Jay Son (minimum viable product) & Jae-Young Son (expansion)
+    -->
+
     <!-- Utilities -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="utils/jquery.csv.js"></script>
@@ -15,6 +20,8 @@
     <!-- Helpers -->
     <script src="resources/adj.js"></script>
     <script src="resources/imgs.js"></script>
+    <script src="resources/setup.js"></script>
+    <script src="resources/learn.js"></script>
 
     <style>
         .flex-container {
@@ -33,83 +40,6 @@
 
 <script>
 
-    /* Generate a random number from a bounded uniform distribution */
-    function get_uniform(min, max) {
-        return Math.random() * (max - min) + min;
-    }
-    
-    /* Parse CSV as an array of objects
-    From: https://github.com/typeiii/jquery-csv */
-    var adj_list = $.csv.toObjects(adj_csv);
-
-    /* Map stims to underlying graph structure */
-    function map_stimuli(adj_list, imgs, map_how = 'equality') {
-        /*
-        map_how can take these values:
-            random: maps images completely at random
-            equality: maps equally among race/gender categories (more-or-less)
-        */
-
-        // Gets array of unique nodes
-        var node_list = new Set();
-        adj_list.forEach(node => {
-            node_list.add(node['from'])
-            node_list.add(node['to'])
-        });
-        node_list = Array.from(node_list);
-        
-        // Shuffle images
-        if (map_how === 'random') {
-            let imgs_all = [
-                ...imgs.af, ...imgs.am,
-                ...imgs.bf, ...imgs.bm,
-                ...imgs.lf, ...imgs.lm,
-                ...imgs.wf, ...imgs.wm
-            ]
-            var randomized_images = jsPsych.randomization.shuffle([...imgs_all]);
-        } else if (map_how === 'equality') {
-            var n_per_category = Math.round(node_list.length / 8);  // 8 = 4 racial categories x 2 gender
-            var n_wf = Math.round(n_per_category*6/2)  // handling rounding errors
-            var randomized_af = jsPsych.randomization.sampleWithoutReplacement([...imgs.af], n_per_category);
-            var randomized_am = jsPsych.randomization.sampleWithoutReplacement([...imgs.am], n_per_category);
-            var randomized_bf = jsPsych.randomization.sampleWithoutReplacement([...imgs.bf], n_per_category);
-            var randomized_bm = jsPsych.randomization.sampleWithoutReplacement([...imgs.bm], n_per_category);
-            var randomized_lf = jsPsych.randomization.sampleWithoutReplacement([...imgs.lf], n_per_category);
-            var randomized_lm = jsPsych.randomization.sampleWithoutReplacement([...imgs.lm], n_per_category);
-            var randomized_wf = jsPsych.randomization.sampleWithoutReplacement([...imgs.wf], n_wf);
-            var randomized_wm = jsPsych.randomization.sampleWithoutReplacement([...imgs.wm], (node_list.length - (n_per_category * 6) - n_wf));
-
-            var randomized_images = jsPsych.randomization.shuffle([
-                ...randomized_af, ...randomized_am,
-                ...randomized_bf, ...randomized_bm,
-                ...randomized_lf, ...randomized_lm,
-                ...randomized_wf, ...randomized_wm
-            ]);
-        }
-        
-        // Map images to nodes
-        var mapping = {};
-        while (node_list.length) {
-            mapping[node_list.pop()] = randomized_images.pop();
-        }
-        return mapping
-    }
-
-    /* Create the HTML for drawing stimuli on message delivery trials */
-    function draw_message(from_node, to_node, opt_a, opt_b, mapping) {
-        return `
-        <div style='width: 700px;'>
-            <p><img width="300" src="` + mapping[from_node] + `"></p>
-            <p><img width="300" src="` + mapping[to_node] + `"></p>
-            <p><img width="300" src="` + mapping[opt_a] + `"></p>
-            <p><img width="300" src="` + mapping[opt_b] + `"></p>
-        </div>
-        `
-    }
-
-    /* Create a random stimulus-to-node mapping for this particular session */
-    let mapping = map_stimuli(adj_list, imgs, 'equality');
-
     /* Create timeline */
     var timeline = [];
 
@@ -124,86 +54,64 @@
         data: { feature: 'fixation' }
     }
 
-    /* Instructions */
-    var instructions = {
+    /* Template: ready-set-go */
+    var get_ready = {
+        type: 'html-keyboard-response',
+        timeline: [
+            {
+                stimulus: 'To get ready, place your index fingers on the F and J keys. <p> Please press F.',
+                choices: ['f']
+            },
+            {
+                stimulus: 'To begin, please press J.',
+                choices: ['j']
+            }
+        ]
+    }
+
+    /* Learning task */
+    var learn_instruct = {
         type: 'instructions',
         pages: [
             // slide 1
-            "Welcome to the experiment. Click next to begin.",
+            "<p> In this part of the study, you will see two people from the same college on each trial. " +
+                "<br> Your job is to learn whether those two people are friends with each other." +
+                "<br> After making a guess, you'll see feedback indicating whether they're actually friends. </p>" +
+            "<p> At first, you might feel like you're guessing randomly. That's okay. " +
+                "<br> Just try your best to learn who's friends with each other. </p>" +
+            "<p> You'll see each pair of people three times (in three separate 'runs' of the task). " +
+                "<br> In each run, try to improve how accurately you can remember who's friends with each other. </p>",
 
             // slide 2
-            "<p>In this experiment, a circle will appear in the center of the screen.</p>" +
-            "<p>If the circle is <strong>blue</strong>, press the letter F on the keyboard as fast as you can.</p>" +
-            "<p>If the circle is <strong>orange</strong>, press the letter J as fast as you can.</p>" +
-            "<div style='width: 700px;'>" +
-                "<div style='float: left;'><img src='img/blue.png'></img>" +
-                    "<p class='small'><strong>Press the F key</strong></p></div>" +
-                "<div class='float: right;'><img src='img/orange.png'></img>" +
-                    "<p class='small'><strong>Press the J key</strong></p></div>" +
-            "</div>"+
-            "<p>Press any key to begin.</p>"
+            "<p> Please note that you will earn an additional bonus, depending on how accurately " +
+                "<br> you're able to learn who's friends with each other. </p>" +
+            "<p> This is a pretty hard task, so don't feel too discouraged if you feel like " +
+                "<br> you're not doing very well. Just try your best to learn who's friends. </p>",
+
+            // slide 3
+            "<p> You will use the F and J keys to respond." +
+                "<br> F = 'Not Friends'" +
+                "<br> J = 'Yes Friends' </p>"
         ],
         show_clickable_nav: true,
         allow_keys: false
     }
-    timeline.push(instructions);
+    timeline.push(learn_instruct);
+    timeline.push(get_ready);
 
-    /* Template: Learning/memory task */
-    // Dynamically create HTML for drawing relevant nodes
-    function draw_learn_mem(node_a, node_b, friendship, mapping, print_text) {
-        
-        if (print_text == 'no') {
-            var print_text = 'Not Friends';
-        } else if (print_text == 'yes') {
-            var print_text = 'Yes Friends';
-        }
-        
-        return `
-        <div class = 'flex-container' style='flex-direction: column; width: 700px; font-size: 200%;'>
-            <p> Friends? </p>
-            <div class = 'flex-container' style='flex-direction: row;'>
-                <img width="150" src="` + mapping[node_a] + `"> 
-                <img width="150" src="` + mapping[node_b] + `">
-            </div>
-            <p> &nbsp; `+ print_text +` &nbsp; </p>
-            <p> For testing: `+ friendship +` </p>
-        </div>
-        `
-    }
-
-    var learn_mem_prompts = adj_list.map(x => ({
-            prompt: draw_learn_mem(x['from'], x['to'], x['friendship'], mapping, '[ f ] No &nbsp; &nbsp; [ j ] Yes'),
-            feedback: draw_learn_mem(x['from'], x['to'], x['friendship'], mapping, x['friendship'])
-        })
-    )
-    
-    // TODO:
-    //  In the procedure, need to find a way to provide feedback about the response (NOT necessarily the correct answer)
-    //      https://github.com/jspsych/jsPsych/discussions/1089#discussioncomment-87488
-    //  Color-code learning feedback
-    var learn_mem_procedure = {
+    // For narrative clarity, many helpers are tucked away in resources/learn_mem.js
+    var learn_procedure = {
         timeline: [
-            // Intertrial fixation
             fixation,
-            // Prompt guess about friendships
-            {
-                type: 'html-keyboard-response',
-                stimulus: jsPsych.timelineVariable('prompt'),
-                choices: ['f', 'j']
-            },
-            // Provide feedback
-            {
-                type: 'html-keyboard-response',
-                stimulus: jsPsych.timelineVariable('feedback'),
-                choices: jsPsych.NO_KEYS,
-                trial_duration: 750
-            }
+            learn_guess,
+            learn_resp_f,
+            learn_resp_j,
+            learn_feedback
         ],
-        timeline_variables: learn_mem_prompts,
+        timeline_variables: learn_prompts,
         randomize_order: true
     }
-
-    timeline.push(learn_mem_procedure);
+    timeline.push(learn_procedure);
 
     // TODO:
     //  Write break screens between learning runs
