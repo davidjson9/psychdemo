@@ -43,12 +43,14 @@ var memory_prompts = adj_list.map(
 var memory_resp = {
     type: 'html-keyboard-response',
     stimulus: jsPsych.timelineVariable('response'),
-    choices: ['f', 'j']
+    choices: ['f', 'j'],
+    data: { feature: 'memory_resp' }
 }
 
 /* Trial template: ask participants to indicate confidence */
 var memory_conf = {
     type: 'html-keyboard-response',
     stimulus: jsPsych.timelineVariable('confidence'),
-    choices: ['s', 'd', 'k', 'l']
+    choices: ['s', 'd', 'k', 'l'],
+    data: { feature: 'memory_conf' }
 }

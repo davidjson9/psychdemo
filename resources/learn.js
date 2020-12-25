@@ -56,7 +56,8 @@ var learn_prompts = adj_list.map(
 var learn_guess = {
     type: 'html-keyboard-response',
     stimulus: jsPsych.timelineVariable('prompt'),
-    choices: ['f', 'j']
+    choices: ['f', 'j'],
+    data: { feature: 'learn_guess' }
 }
 
 /* Trial template: provide participants w/ visual feedback about what they'd guessed */
@@ -99,5 +100,6 @@ var learn_feedback = {
     type: 'html-keyboard-response',
     stimulus: jsPsych.timelineVariable('feedback'),
     choices: jsPsych.NO_KEYS,
-    trial_duration: 750
+    trial_duration: 750,
+    data: { feature: 'learn_feedback' }
 }

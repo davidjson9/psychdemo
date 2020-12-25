@@ -68,7 +68,8 @@
                 stimulus: 'To begin, please press J.',
                 choices: ['j']
             }
-        ]
+        ],
+        data: { feature: 'ready_set_go' }
     }
 
     /* Template: rest breaks */
@@ -80,7 +81,8 @@
                 choices: ['space']
             },
             get_ready
-        ]
+        ],
+        data: { feature: 'rest_break' }
     }
 
     /* Learning task */
@@ -109,7 +111,11 @@
         ],
         show_page_number: true,
         show_clickable_nav: true,
-        allow_keys: false
+        allow_keys: false,
+        data: {
+            feature: 'instructions',
+            mapping: mapping
+        }
     }
 
     // For narrative clarity, many helpers are tucked away in resources/learn.js
@@ -125,7 +131,7 @@
         randomize_order: true,
         sample: {
             type: 'without-replacement',
-            size: 5
+            size: 3
         }
     }
 
@@ -160,7 +166,8 @@
         ],
         show_page_number: true,
         show_clickable_nav: true,
-        allow_keys: false
+        allow_keys: false,
+        data: { feature: 'instructions' }
     }
 
     // For narrative clarity, many helpers are tucked away in resources/memory.js
@@ -174,7 +181,7 @@
         randomize_order: true,
         sample: {
             type: 'without-replacement',
-            size: 5
+            size: 3
         }
     }
     
@@ -216,7 +223,8 @@
         ],
         show_page_number: true,
         show_clickable_nav: true,
-        allow_keys: false
+        allow_keys: false,
+        data: { feature: 'instructions' }
     }
 
     // For narrative clarity, many helpers are tucked away in resources/test.js
@@ -229,7 +237,7 @@
         randomize_order: true,
         sample: {
             type: 'without-replacement',
-            size: 5
+            size: 3
         }
     }
 

@@ -46,5 +46,6 @@ var test_prompts = test_list.map(
 var test_resp = {
     type: 'html-keyboard-response',
     stimulus: jsPsych.timelineVariable('response'),
-    choices: ['f', 'j']
+    choices: ['f', 'j'],
+    data: { feature: 'test_resp' }
 }
