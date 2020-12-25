@@ -10,7 +10,6 @@
     <!-- Utilities -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="utils/jquery.csv.js"></script>
-    <script src="utils/utils.js"></script>
     <!-- jsPsych -->
     <script src="jspsych-6.2.0/jspsych.js"></script>
     <script src="jspsych-6.2.0/plugins/jspsych-instructions.js"></script>
@@ -19,10 +18,12 @@
     <link href="jspsych-6.2.0/css/jspsych.css" rel="stylesheet" type="text/css">
     <!-- Helpers -->
     <script src="resources/adj.js"></script>
+    <script src="resources/message_tests.js"></script>
     <script src="resources/imgs.js"></script>
     <script src="resources/setup.js"></script>
     <script src="resources/learn.js"></script>
     <script src="resources/memory.js"></script>
+    <script src="resources/test.js"></script>
 
     <style>
         .flex-container {
@@ -106,6 +107,7 @@
                 "<br> F = Not Friends" +
                 "<br> J = Yes Friends </p>"
         ],
+        show_page_number: true,
         show_clickable_nav: true,
         allow_keys: false
     }
@@ -152,6 +154,7 @@
                 "<br> K = Sure" +
                 "<br> L = Very Sure </p>"
         ],
+        show_page_number: true,
         show_clickable_nav: true,
         allow_keys: false
     }
@@ -173,7 +176,55 @@
     timeline.push(memory_procedure);
 
     /* Message-passing task */
+    var test_instruct = {
+        type: 'instructions',
+        pages: [
+            // slide 1
+            "<p> In the last part of the study, you will play a mail delivery game. " +
+                "<br> In the diagram below, you can see that Red wants to send a letter to Blue. " +
+                "<br> However, Red can only pass the letter to Purple or Green. " +
+                "<br> Red doesn't know who Blue's friends are, and is having a hard time deciding. " +
+                "<br> Your job is to pass the letter to someone who can deliver it to Blue. " +
+                "<p> <img src = 'img/mail_instruct.png'> </p>",
 
+            // slide 2
+            "<p> On each trial, you will give the letter to Purple or Green. " +
+                "<br> If one of them is friends with Blue, then they will deliver the letter directly." +
+                "<br> Otherwise, they will need to pass the letter to someone else until it finally" +
+                "<br> reaches a person who can deliver it directly to Blue. " +
+                "<br> Depending on your choice, the letter could be delivered efficiently, inefficiently, or not at all. " +
+                "<p> <img src = 'img/mail_instruct.png'> </p>",
+
+            // slide 3
+            "<p> In the real task, you'll see photos of the people you've been seeing throughout the study. " +
+                "<br> When you're choosing who to give the letter to, it might help if you try to " +
+                "<br> remember who's friends with each other. " +
+                "<br> That could help you figure out the most efficient way to deliver the mail. </p>",
+
+            // slide 3
+            "<p> When making your decision, please use the following keys." +
+                "<br> F = Person on the left" +
+                "<br> J = Person on the right </p>"
+        ],
+        show_page_number: true,
+        show_clickable_nav: true,
+        allow_keys: false
+    }
+
+    // For narrative clarity, many helpers are tucked away in resources/test.js
+    var test_procedure = {
+        timeline: [
+            fixation,
+            test_resp
+        ],
+        timeline_variables: test_prompts,
+        randomize_order: true
+    }
+
+    // Full timeline of message-passing task events
+    timeline.push(test_instruct);
+    timeline.push(get_ready);
+    timeline.push(test_procedure);
 
     /* Start the experiment */
     jsPsych.init({

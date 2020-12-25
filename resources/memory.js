@@ -24,18 +24,20 @@ function draw_memory(node_a, node_b, friendship, mapping, display_left, print_te
 }
 
 /* Supply prompts to the HTML-creater */
-var memory_prompts = adj_list.map(x => ({
-    response: draw_memory(
-        x['from'], x['to'], x['friendship'], mapping, x['display_left'],
-        '[ F ] No &nbsp; &nbsp; [ J ] Yes',
-        'Friends?'
-    ),
-    confidence: draw_memory(
-        x['from'], x['to'], x['friendship'], mapping, x['display_left'],
-        '[S] Very Unsure &nbsp; [D] Unsure &nbsp; [K] Sure &nbsp; [L] Very Sure',
-        'How sure are you?'
-    )
-}))
+var memory_prompts = adj_list.map(
+    x => ({
+        response: draw_memory(
+            x['from'], x['to'], x['friendship'], mapping, x['display_left'],
+            '[ F ] No &nbsp; &nbsp; [ J ] Yes',
+            'Friends?'
+            ),
+        confidence: draw_memory(
+            x['from'], x['to'], x['friendship'], mapping, x['display_left'],
+            '[S] Very Unsure &nbsp; [D] Unsure &nbsp; [K] Sure &nbsp; [L] Very Sure',
+            'How sure are you?'
+        )
+    })
+)
 
 /* Trial template: ask participants to remember friendship */
 var memory_resp = {

@@ -31,7 +31,8 @@ function draw_learn(node_a, node_b, friendship, mapping, display_left, print_tex
 }
 
 /* Supply prompts to the HTML-creater */
-var learn_prompts = adj_list.map(x => ({
+var learn_prompts = adj_list.map(
+    x => ({
         prompt: draw_learn(
             x['from'], x['to'], x['friendship'], mapping, x['display_left'],
             '[ F ] No &nbsp; &nbsp; [ J ] Yes'
