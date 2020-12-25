@@ -22,6 +22,7 @@
     <script src="resources/imgs.js"></script>
     <script src="resources/setup.js"></script>
     <script src="resources/learn.js"></script>
+    <script src="resources/memory.js"></script>
 
     <style>
         .flex-container {
@@ -46,7 +47,7 @@
     /* Template: fixation */
     var fixation = {
         type: 'html-keyboard-response',
-        stimulus: '<div style="font-size:60px;">+</div>',
+        stimulus: '<div style = "font-size:60px;"> + </div>',
         choices: jsPsych.NO_KEYS,
         trial_duration: function() {
             return get_uniform(250, 750);
@@ -66,6 +67,18 @@
                 stimulus: 'To begin, please press J.',
                 choices: ['j']
             }
+        ]
+    }
+
+    /* Template: rest breaks */
+    var take_break = {
+        timeline: [
+            {
+                type: 'html-keyboard-response',
+                stimulus: 'If you would like to take a quick break, please do so now. <p> Press the spacebar to continue.',
+                choices: ['space']
+            },
+            get_ready
         ]
     }
 
@@ -90,16 +103,14 @@
 
             // slide 3
             "<p> You will use the F and J keys to respond." +
-                "<br> F = 'Not Friends'" +
-                "<br> J = 'Yes Friends' </p>"
+                "<br> F = Not Friends" +
+                "<br> J = Yes Friends </p>"
         ],
         show_clickable_nav: true,
         allow_keys: false
     }
-    timeline.push(learn_instruct);
-    timeline.push(get_ready);
 
-    // For narrative clarity, many helpers are tucked away in resources/learn_mem.js
+    // For narrative clarity, many helpers are tucked away in resources/learn.js
     var learn_procedure = {
         timeline: [
             fixation,
@@ -111,12 +122,58 @@
         timeline_variables: learn_prompts,
         randomize_order: true
     }
+
+    // Full timeline of learning task events
+    timeline.push(learn_instruct);
+    timeline.push(get_ready);
+    timeline.push(learn_procedure);
+    timeline.push(take_break);
+    timeline.push(learn_procedure);
+    timeline.push(take_break);
     timeline.push(learn_procedure);
 
-    // TODO:
-    //  Write break screens between learning runs
-    //  Write memory task (slight modification of allowable keys)
-    //  Write message-passing task (more flexbox agony ahead)
+    /* Memory task */
+    var memory_instruct = {
+        type: 'instructions',
+        pages: [
+            // slide 1
+            "<p> In this part of the study, you will see the same pairs of people again. " +
+                "<br> Please try to do your best to remember which people are friends." +
+                "<br> You will also be asked to rate how sure you are about your memory. </p>",
+
+            // slide 2
+            "<p> Please note that you will earn an additional bonus, depending on how accurately " +
+                "<br> you remember who's friends. </p>",
+
+            // slide 3
+            "<p> When rating how sure you feel about your memory, please use the following keys." +
+                "<br> S = Very Unsure" +
+                "<br> D = Unsure" +
+                "<br> K = Sure" +
+                "<br> L = Very Sure </p>"
+        ],
+        show_clickable_nav: true,
+        allow_keys: false
+    }
+
+    // For narrative clarity, many helpers are tucked away in resources/memory.js
+    var memory_procedure = {
+        timeline: [
+            fixation,
+            memory_resp,
+            memory_conf
+        ],
+        timeline_variables: memory_prompts,
+        randomize_order: true
+    }
+    
+    // Full timeline of memory task events
+    timeline.push(memory_instruct);
+    timeline.push(get_ready);
+    timeline.push(memory_procedure);
+
+    /* Message-passing task */
+
 
     /* Start the experiment */
     jsPsych.init({

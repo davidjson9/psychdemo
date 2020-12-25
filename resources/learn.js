@@ -18,9 +18,9 @@ function draw_learn(node_a, node_b, friendship, mapping, display_left, print_tex
     }
     
     return `
-        <div class = 'flex-container' style='flex-direction: column; width: 700px; font-size: 200%;'>
+        <div class = 'flex-container' style = 'flex-direction: column; width: 700px; font-size: 200%;'>
             <p> Friends? </p>
-            <div class = 'flex-container' style='flex-direction: row;'>
+            <div class = 'flex-container' style = 'flex-direction: row;'>
                 <img width="150" src="` + left_node + `"> 
                 <img width="150" src="` + right_node + `">
             </div>
@@ -34,15 +34,15 @@ function draw_learn(node_a, node_b, friendship, mapping, display_left, print_tex
 var learn_prompts = adj_list.map(x => ({
         prompt: draw_learn(
             x['from'], x['to'], x['friendship'], mapping, x['display_left'],
-            '[ f ] No &nbsp; &nbsp; [ j ] Yes'
+            '[ F ] No &nbsp; &nbsp; [ J ] Yes'
         ),
         resp_f: draw_learn(
             x['from'], x['to'], x['friendship'], mapping, x['display_left'],
-            '<strong style = "background-color: Gold;">[ f ] No</strong> &nbsp; &nbsp; [ j ] Yes'
+            '<strong style = "background-color: Gold;">[ F ] No</strong> &nbsp; &nbsp; [ J ] Yes'
         ),
         resp_j: draw_learn(
             x['from'], x['to'], x['friendship'], mapping, x['display_left'],
-            '[ f ] No &nbsp; &nbsp; <strong style = "background-color: Gold;">[ j ] Yes</strong>'
+            '[ F ] No &nbsp; &nbsp; <strong style = "background-color: Gold;">[ J ] Yes</strong>'
         ),
         feedback: draw_learn(
             x['from'], x['to'], x['friendship'], mapping, x['display_left'],
