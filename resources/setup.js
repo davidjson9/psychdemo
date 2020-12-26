@@ -69,14 +69,20 @@ function map_stimuli(adj_list, imgs, map_how = 'equality') {
             ...randomized_wf, ...randomized_wm
         ]);
     }
+
+    // Mark which images to preload
+    var preload_these = [...randomized_images]
     
     // Map images to nodes
     var mapping = {};
     while (node_list.length) {
         mapping[node_list.pop()] = randomized_images.pop();
     }
-    return mapping
+    
+    return { mapping: mapping, preload_these: preload_these }
 }
 
 /* Create a random stimulus-to-node mapping for this particular session */
-let mapping = map_stimuli(adj_list, imgs, 'equality');
+let this_mapping = map_stimuli(adj_list, imgs, 'equality')
+let mapping = this_mapping.mapping
+let preload_stims = this_mapping.preload_these

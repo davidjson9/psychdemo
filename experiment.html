@@ -13,6 +13,7 @@
     <!-- jsPsych -->
     <script src="jspsych-6.2.0/jspsych.js"></script>
     <script src="jspsych-6.2.0/plugins/jspsych-instructions.js"></script>
+    <script src="jspsych-6.2.0/plugins/jspsych-survey-text.js"></script>
     <script src="jspsych-6.2.0/plugins/jspsych-html-keyboard-response.js"></script>
     <script src="jspsych-6.2.0/plugins/jspsych-image-keyboard-response.js"></script>
     <link href="jspsych-6.2.0/css/jspsych.css" rel="stylesheet" type="text/css">
@@ -41,7 +42,21 @@
 <body></body>
 
 <script>
+    /* Switch on/off debug mode */
+    let debug_mode = true
 
+    /* Placeholder for participant ID */
+    var this_pid = ""
+    
+    /* Specify what images to preload */
+    var preload_these = [
+        // stims
+        ...preload_stims,
+        // message-delivery
+        'img/mail.png',
+        'img/mail_instruct.png'
+    ]
+    
     /* Create timeline */
     var timeline = [];
 
@@ -84,6 +99,24 @@
         ],
         data: { feature: 'rest_break' }
     }
+
+    /* Get participant ID info */
+    var participant_id = {
+        type: 'survey-text',
+        questions: [
+            {prompt: "Please enter your participant ID:", name: 'pid'}
+        ],
+        on_finish: function () {
+            // method for saving participant ID as a variable
+            // tried adding a way to switch on a fast-run test mode depending on pid
+            // by adding this to the learn_procedure object:
+            // ...(this_pid === '999') && {sample: {type: 'without-replacement', size: 3}}
+            // alas, it didn't work
+            var pid = jsPsych.data.get().readOnly().first(1).values()[0].responses
+            this_pid = pid.substring(8, pid.length-2)
+        }
+    }
+    timeline.push(participant_id);
 
     /* Learning task */
     var learn_instruct = {
@@ -128,7 +161,8 @@
             learn_feedback
         ],
         timeline_variables: learn_prompts,
-        randomize_order: true
+        randomize_order: true,
+        ...(debug_mode) && {sample: {type: 'without-replacement', size: 3}}
     }
 
     // Full timeline of learning task events
@@ -174,7 +208,8 @@
             memory_conf
         ],
         timeline_variables: memory_prompts,
-        randomize_order: true
+        randomize_order: true,
+        ...(debug_mode) && {sample: {type: 'without-replacement', size: 3}}
     }
     
     // Full timeline of memory task events
@@ -226,7 +261,8 @@
             test_resp
         ],
         timeline_variables: test_prompts,
-        randomize_order: true
+        randomize_order: true,
+        ...(debug_mode) && {sample: {type: 'without-replacement', size: 3}}
     }
 
     // Full timeline of message-passing task events
@@ -237,6 +273,7 @@
     /* Start the experiment */
     jsPsych.init({
         timeline: timeline,
+        preload_images: preload_these,
         on_finish: function () {
             jsPsych.data.displayData();
         }
